@@ -217,6 +217,7 @@ export default {
           type: "success",
           duration: 2000,
         });
+        _this.$router.push("/flowinstances/index");
       });
       _this.loading = false;
     },

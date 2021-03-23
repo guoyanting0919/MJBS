@@ -35,7 +35,7 @@
         <el-date-picker value-format="yyyy-MM-dd" @change="getList" placeholder="選擇日期" size="mini" style="width: 200px; margin: 0 " v-model="listQuery.StartDate" type="date">
         </el-date-picker>
 
-        <el-input style="width: 200px; margin-left: 0.5rem" size="mini" v-model="listQuery.key" clearable placeholder="請輸入關鍵字"></el-input>
+        <el-input style="width: 200px; margin-left: 0.5rem" size="mini" v-model="listQuery.key" clearable placeholder="請輸入關鍵字" @keyup.enter.native="getList"></el-input>
 
         <!-- 列表 -->
         <el-table ref="mainTable" :data="list" border fit v-loading="listLoading" highlight-current-row @selection-change="handleSelectionChange" style="width: 100% ;margin-top:8px">

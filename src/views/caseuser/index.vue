@@ -3,7 +3,7 @@
     <sticky :className="'sub-navbar'">
       <div class="filter-container">
         <!-- 關鍵字搜尋 -->
-        <el-input style="width: 200px; margin-right: 0.5rem" size="mini" v-model="value" clearable placeholder="請輸入關鍵字"></el-input>
+        <el-input @keyup.enter.native="getList" style="width: 200px; margin-right: 0.5rem" size="mini" v-model="listQuery.key" clearable placeholder="請輸入關鍵字"></el-input>
         <!-- 權限按鈕 -->
         <permission-btn moduleName="builderTables" size="mini" v-on:btn-event="onBtnClicked"></permission-btn>
       </div>
@@ -204,16 +204,23 @@ export default {
   methods: {
     /* 獲取特殊修改權限 */
     getSpecialButtons() {
-      let router2 = this.$store.getters.modules;
-      let a = router2.filter((r) => {
-        return r.item.name == "用戶資料";
-      });
-      let b = a[0].children.filter((r2) => {
-        return r2.item.name == "全部用戶";
-      });
-      this.specialButtons = b[0].item.elements.map((btn) => {
-        return btn.domId;
-      });
+      let allRouter = this.$store.getters.modules;
+      let hasAllUserPage = allRouter
+        .filter((r) => r.item.name === "用戶資料")[0]
+        .children.map((r2) => r2.item.name)
+        .includes("全部用戶");
+      this.specialButtons = allRouter
+        .filter((r) => {
+          return r.item.name === "用戶資料";
+        })[0]
+        .children.filter((r2) => {
+          let pageName = hasAllUserPage ? "全部用戶" : "長照用戶";
+          return r2.item.name === pageName;
+        })[0]
+        .item.elements.map((btn) => {
+          return btn.domId;
+        });
+      console.log(this.specialButtons);
     },
 
     /* 是否擁有特殊按鈕功能權限 */
@@ -226,7 +233,6 @@ export default {
       const vm = this;
       vm.listLoading = true;
       caseUsers.load(vm.listQuery).then((res) => {
-        console.log(res.data);
         vm.list = res.data;
         vm.total = res.count;
         vm.listLoading = false;
@@ -351,6 +357,9 @@ export default {
       switch (domId) {
         case "violationBtn":
           this.violationDialog = true;
+          break;
+        case "search":
+          this.getList();
           break;
         default:
           break;
